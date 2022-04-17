@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@components/*": ["src/components/*"],
+            "@components": ["src/components/index.js"],
+            "@design-system/*": ["src/design-system/*"],
+            "@design-system": ["src/design-system/index.js"],
+            "@utils/*": ["src/utils/*"],
+            "@hooks/*": ["src/hooks/*"],
+            "@hooks": ["src/hooks/index.js"],
+            "@constants": ["src/constants.js"],
+        }
+    },
+    "exclude": ["node_modules"]
+}
