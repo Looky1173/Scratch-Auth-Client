@@ -210,7 +210,7 @@ function Hero() {
                                 lineHeight: '25px',
                             }}
                         >
-                            Your users may choose to stay logged in to multiple Scratch accounts, and sign in with one click to your services. That's a win-win situation!
+                            Your users can log in with both cloud data and by commenting. Therefore, Scratch Auth can be used by New Scratchers as well, who don't have access to cloud data yet.
                         </Text>
                     </Box>
                     <Box>
