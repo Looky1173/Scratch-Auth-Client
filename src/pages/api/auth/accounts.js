@@ -28,7 +28,9 @@ async function accounts(req, res) {
 
         if (!req.query.username) return res.status(400).json({ error: 'Missing username' });
 
-        let data = await fetch(`${serverURL}/auth/oneClickSignIn/${req.query.username}`, { method: 'POST', headers: { Authorization: req.session?.user?.token } });
+        if (!req.query.redirect) return res.status(400).json({ error: 'Missing redirect location' });
+
+        let data = await fetch(`${serverURL}/auth/oneClickSignIn/${req.query.username}&redirect=${req.query.redirect}`, { method: 'POST', headers: { Authorization: req.session?.user?.token } });
         data = await data.json();
 
         return res.status(200).json({ success: typeof data.error === 'undefined' ? true : false, error: data.error, instantPrivateCode: data.instantPrivateCode });

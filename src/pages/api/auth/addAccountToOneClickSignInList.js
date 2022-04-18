@@ -6,7 +6,7 @@ export default withIronSessionApiRoute(async (req, res) => {
 
     let privateCode = req.query.privateCode;
 
-    let token = await fetch(`${serverURL}/auth/verifyToken/${privateCode}?oneClickSignIn=true`, { headers: { Authorization: req.session?.user?.token } });
+    let token = await fetch(`${serverURL}/auth/verifyToken/${privateCode}?oneClickSignIn=true&redirect=${req.query.redirect}`, { headers: { Authorization: req.session?.user?.token } });
     token = await token.json();
 
     if (token.valid === true) {

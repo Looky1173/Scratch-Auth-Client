@@ -95,7 +95,7 @@ export default function Auth() {
 
     async function getTokens() {
         setAuthenticationTokens({ cloud: null, comment: null });
-        let tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}`);
+        let tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}`);
         tokens = await tokens.json();
         setAuthenticationTokens({ ...authenticationTokens, [authenticationMethod]: { ...tokens, time: Date.now() } });
     }
@@ -145,7 +145,7 @@ export default function Auth() {
         }
 
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
-            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}`, { method: 'GET' });
+            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation}`, { method: 'GET' });
             token = await token.json();
 
             if (token.valid !== true) {
