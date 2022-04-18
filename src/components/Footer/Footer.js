@@ -52,7 +52,7 @@ const Footer = () => {
                         <ul>
                             <li>
                                 <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
-                                    <NextLink href="/documentation" passHref>
+                                    <NextLink href="/documentation/introduction" passHref>
                                         <Link variant="subtle">Documentation</Link>
                                     </NextLink>
                                 </Text>

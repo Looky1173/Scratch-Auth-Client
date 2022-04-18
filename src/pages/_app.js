@@ -20,7 +20,7 @@ const darkTheme = createTheme({
 function MyApp({ Component, pageProps }) {
     return (
         <>
-            {/* <Script data-website-id="77abe5c5-6a80-46c5-a574-44eeb19fd6de" data-domains="beta.itinerary.eu.org" src="https://umami-production-dc41.up.railway.app/umami.js" /> */}
+            <Script data-website-id="3910acac-41c1-4af3-8d47-968e10c1b638" data-domains="auth.itinerary.eu.org" src="https://analytics.itinerary.eu.org/umami.js" />
             <SWRConfig
                 value={{
                     fetcher: fetcher,
