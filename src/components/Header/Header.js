@@ -90,7 +90,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                     </Box>
                 </NextLink>
                 <Flex as="nav" css={{ ai: 'center' }}>
-                    <NextLink href="/documentation" passHref>
+                    <NextLink href="/documentation/introduction" passHref>
                         <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
                             <Text>Documentation</Text>
                         </Link>
