@@ -58,7 +58,7 @@ function Hero() {
                     Scratch Auth comes with a simple API, is fully customizable, and looks <i>fantastic</i>!
                 </Paragraph>
                 <Flex css={{ '@bp2': { jc: 'center', my: '$7' } }}>
-                    <NextLink href="/documentation" passHref>
+                    <NextLink href="/documentation/introduction" passHref>
                         <Button as="a" variant="accent" css={{ mr: '$3' }}>
                             Documentation
                             <Box css={{ ml: '$1' }}>
@@ -66,7 +66,7 @@ function Hero() {
                             </Box>
                         </Button>
                     </NextLink>
-                    <NextLink href="/about" passHref>
+                    <NextLink href="/documentation/about" passHref>
                         <Button as="a" variant="neutral">
                             Learn more
                         </Button>
@@ -128,7 +128,7 @@ function Hero() {
                             }}
                         >
                             With only 3 API endpoints, Scratch Auth is a breeze to integrate into your Scratch app! What's more, everything is fully documented and explained on the{' '}
-                            <NextLink href="/documentation" passHref>
+                            <NextLink href="/documentation/introduction" passHref>
                                 <Link>Documentation</Link>
                             </NextLink>{' '}
                             page.
