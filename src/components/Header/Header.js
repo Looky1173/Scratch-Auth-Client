@@ -29,12 +29,15 @@ const AccountExpiry = styled(Box, {
 function Header({ withSecondaryHeader, secondaryHeader }) {
     const { accounts, mutateAccounts } = useAccounts();
     const router = useRouter();
-
-    const [removeAccountButtonStates, setRemoveAccountButtonStates] = useState({});
+    const [redirect, setRedirect] = useState(undefined);
 
     useEffect(() => {
-        console.log('A', accounts);
-    }, [accounts]);
+        if (router.isReady) {
+            setRedirect(router.query?.redirect || undefined);
+        }
+    }, [router.isReady, router.query]);
+
+    const [removeAccountButtonStates, setRemoveAccountButtonStates] = useState({});
 
     async function removeAccount(username = null) {
         if (username === null) {
@@ -113,7 +116,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                         </Link>
                     )}
                     {accounts?.isIdentified === false && (
-                        <NextLink href="/auth?newOneClickSignInAccount=true" passHref>
+                        <NextLink href={redirect === undefined ? '/auth?newOneClickSignInAccount=true' : `/auth?newOneClickSignInAccount=true&redirect=${redirect}`} passHref>
                             <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
                                 <Text>Add a Scratch account</Text>
                             </Link>
@@ -159,7 +162,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                                                 <Text css={{ lineHeight: 1.3 }}>Last used to sign in at {new Date(account.updated).toLocaleString()}</Text>
                                             </AccountCard>
                                         ))}
-                                    <NextLink href="/auth?newOneClickSignInAccount=true" passHref>
+                                    <NextLink href={redirect === undefined ? '/auth?newOneClickSignInAccount=true' : `/auth?newOneClickSignInAccount=true&redirect=${redirect}`} passHref>
                                         <Button as="a" variant="accent" css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}>
                                             Add a new account
                                         </Button>

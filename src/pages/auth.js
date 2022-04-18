@@ -88,7 +88,7 @@ export default function Auth() {
 
     useEffect(() => {
         if (router.isReady) {
-            setProviderData({ redirectLocation: router.query?.redirect, providerName: router.query?.name });
+            setProviderData({ redirectLocation: router.query?.redirect || undefined, providerName: router.query?.name });
             setNewOneClickSignInAccount(Boolean(router.query.newOneClickSignInAccount) === true ? true : false);
         }
     }, [router.isReady, router.query]);
@@ -160,27 +160,28 @@ export default function Auth() {
                         <Box>
                             <ToastTitle>Failed authentication!</ToastTitle>
                             <ToastDescription>We couldn't authenticate you, therefore your account was not added to (or renewed on) your one click sign in list.</ToastDescription>
-                            {newOneClickSignInAccount === false && (
-                                <Flex css={{ width: '100%', mt: '$2' }} align="center" justify="center">
-                                    <Button
-                                        variant="danger"
-                                        css={{ mr: '$2' }}
-                                        onClick={() => {
-                                            deleteToast(errorToast);
-                                            location.href = `${redirect}?privateCode=${privateCode}&publicCode=${publicCode}`;
-                                        }}
-                                    >
-                                        Dismiss and continue
-                                    </Button>
-                                </Flex>
-                            )}
+                            {newOneClickSignInAccount === false ||
+                                (newOneClickSignInAccount === true && providerData.redirectLocation !== undefined && (
+                                    <Flex css={{ width: '100%', mt: '$2' }} align="center" justify="center">
+                                        <Button
+                                            variant="danger"
+                                            css={{ mr: '$2' }}
+                                            onClick={() => {
+                                                deleteToast(errorToast);
+                                                location.href = `${redirect}?privateCode=${privateCode}&publicCode=${publicCode}`;
+                                            }}
+                                        >
+                                            Dismiss and continue
+                                        </Button>
+                                    </Flex>
+                                ))}
                         </Box>
                     ),
                     variant: 'danger',
                     duration: newOneClickSignInAccount === false ? Infinity : 15 * 1000,
                 });
             } else {
-                if (newOneClickSignInAccount === true) {
+                if (newOneClickSignInAccount === true && providerData.redirectLocation === undefined) {
                     router.push('/');
                     toast({
                         title: `Your account ${token.username} was successfully saved to your one click sign in account list!`,
@@ -345,7 +346,14 @@ export default function Auth() {
                                 </Heading>
                                 {accounts?.isIdentified !== undefined ? (
                                     accounts?.accounts?.length === 0 || accounts?.isIdentified === false ? (
-                                        <NextLink href="/auth?newOneClickSignInAccount=true" passHref>
+                                        <NextLink
+                                            href={
+                                                providerData?.redirectLocation === undefined
+                                                    ? '/auth?newOneClickSignInAccount=true'
+                                                    : `/auth?newOneClickSignInAccount=true&redirect=${providerData.redirectLocation}`
+                                            }
+                                            passHref
+                                        >
                                             <Button as="a" variant="accent" css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}>
                                                 {accounts?.isIdentified === false ? 'Add a Scratch account' : 'Add a new account'}
                                             </Button>
