@@ -211,7 +211,7 @@ export default function Auth() {
             duration: Infinity,
         });
 
-        let token = await fetch(`/api/auth/accounts?username=${username}`, { method: 'POST' });
+        let token = await fetch(`/api/auth/accounts?username=${username}&redirect=${providerData?.redirectLocation}`, { method: 'POST' });
         token = await token.json();
 
         if (token.success === true) {
