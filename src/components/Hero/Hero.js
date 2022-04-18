@@ -34,7 +34,7 @@ function Hero() {
                         },
                     }}
                 >
-                    Scratch auth{' '}
+                    Scratch OAuth{' '}
                     <Box
                         as="span"
                         css={{
