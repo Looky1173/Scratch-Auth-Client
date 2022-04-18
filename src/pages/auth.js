@@ -407,8 +407,9 @@ export default function Auth() {
                         <Card css={{ p: '$4', mb: '$2' }}>
                             <Heading as="h3">Sign in {authenticationMethod === 'cloud' ? 'through cloud data' : 'by commenting'}</Heading>
                             <Text css={{ lineHeight: 1.3 }}>
-                                Copy the code below, open and start the authentication project, and enter the code when prompted. This will sign you in with the Scratch account that you are currently
-                                logged into.
+                                {authenticationMethod === 'cloud'
+                                    ? 'Copy the code below, open and start the authentication project, and enter the code when prompted. This will sign you in with the Scratch account that you are currently logged into.'
+                                    : 'Copy the code below, open the authentication project, and leave a comment containing only and exactly your code. This will sign you in with the Scratch account that you are currently logged into.'}
                             </Text>
                             <Flex justify="center" css={{ my: '$4' }}>
                                 <CodeCard>

@@ -159,25 +159,22 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                                                 <Text css={{ lineHeight: 1.3 }}>Last used to sign in at {new Date(account.updated).toLocaleString()}</Text>
                                             </AccountCard>
                                         ))}
-                                    {accounts.accounts.length === 0 ? (
-                                        <NextLink href="/auth?newOneClickSignInAccount=true" passHref>
-                                            <Button as="a" variant="accent" css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}>
-                                                Add a new account
-                                            </Button>
-                                        </NextLink>
-                                    ) : (
-                                        <Button
-                                            variant="danger"
-                                            css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}
-                                            disabled={removeAccountButtonStates?._removeAllButtonDisabled === true ? true : false}
-                                            onClick={() => {
-                                                setRemoveAccountButtonStates({ ...removeAccountButtonStates, _removeAllButtonDisabled: true });
-                                                removeAccount();
-                                            }}
-                                        >
-                                            Remove all
+                                    <NextLink href="/auth?newOneClickSignInAccount=true" passHref>
+                                        <Button as="a" variant="accent" css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}>
+                                            Add a new account
                                         </Button>
-                                    )}
+                                    </NextLink>
+                                    <Button
+                                        variant="danger"
+                                        css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}
+                                        disabled={removeAccountButtonStates?._removeAllButtonDisabled === true ? true : false}
+                                        onClick={() => {
+                                            setRemoveAccountButtonStates({ ...removeAccountButtonStates, _removeAllButtonDisabled: true });
+                                            removeAccount();
+                                        }}
+                                    >
+                                        Remove all
+                                    </Button>
                                     <Text css={{ lineHeight: 1.3, mb: '$2' }}>One click sign in accounts expire after 30 days of not being used. Using one to sign in will reset its expiry date.</Text>
                                     <Link
                                         as="a"
