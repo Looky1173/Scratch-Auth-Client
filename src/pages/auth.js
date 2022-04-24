@@ -145,7 +145,7 @@ export default function Auth() {
         }
 
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
-            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation}`, { method: 'GET' });
+            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`, { method: 'GET' });
             token = await token.json();
 
             if (token.valid !== true) {
