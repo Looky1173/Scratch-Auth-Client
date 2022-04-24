@@ -83,7 +83,7 @@ export default function Auth() {
     const [newOneClickSignInAccount, setNewOneClickSignInAccount] = useState(false);
 
     const router = useRouter();
-    const { accounts } = useAccounts();
+    const { accounts, mutateAccounts } = useAccounts();
     const [toast, deleteToast] = useToast();
 
     useEffect(() => {
@@ -188,6 +188,7 @@ export default function Auth() {
                         description: 'You can now log in with it faster!',
                         duration: 15 * 1000,
                     });
+                    mutateAccounts();
                 } else {
                     location.href = `${redirect}?privateCode=${token.instantPrivateCode}`;
                 }
