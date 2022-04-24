@@ -207,7 +207,7 @@ export default function Auth() {
         setLoadingOneClickSignIn(true);
         let signingInToast = toast({
             title: `Signing you in as ${username}...`,
-            description: `You will soon be redirected to ${providerData?.providerName}`,
+            description: `You will soon be redirected to ${providerData?.providerName || 'the service that sent you to Scratch Auth'}`,
             duration: Infinity,
         });
 
