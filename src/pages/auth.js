@@ -83,7 +83,7 @@ export default function Auth() {
     const [newOneClickSignInAccount, setNewOneClickSignInAccount] = useState(false);
 
     const router = useRouter();
-    const { accounts } = useAccounts();
+    const { accounts, mutateAccounts } = useAccounts();
     const [toast, deleteToast] = useToast();
 
     useEffect(() => {
@@ -145,7 +145,7 @@ export default function Auth() {
         }
 
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
-            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation}`, { method: 'GET' });
+            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`, { method: 'GET' });
             token = await token.json();
 
             if (token.valid !== true) {
@@ -188,6 +188,7 @@ export default function Auth() {
                         description: 'You can now log in with it faster!',
                         duration: 15 * 1000,
                     });
+                    mutateAccounts();
                 } else {
                     location.href = `${redirect}?privateCode=${token.instantPrivateCode}`;
                 }
@@ -207,7 +208,7 @@ export default function Auth() {
         setLoadingOneClickSignIn(true);
         let signingInToast = toast({
             title: `Signing you in as ${username}...`,
-            description: `You will soon be redirected to ${providerData?.providerName}`,
+            description: `You will soon be redirected to ${providerData?.providerName || 'the service that sent you to Scratch Auth'}`,
             duration: Infinity,
         });
 
