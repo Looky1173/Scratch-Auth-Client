@@ -99,7 +99,7 @@ fetch(`https://auth.itinerary.eu.org/api/auth/verifyToken?privateCode=${privateC
 
 Finally, whenever the client makes a request to the backend that requires authentication, send the session ID and make the server verify that that session actually exists!
 
-#### With session token authentication
+#### With token based authentication
 
 This approach essentially follows the same two steps (outlined above) as session based authentication, except instead of inserting a record into a database with a session ID,
 the server generates a "token" encrypted with a secret key and sends that to the client. Then, when the client needs to make a request to a protected API endpoint (one that requires authentication),
