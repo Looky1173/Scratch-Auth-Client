@@ -5,6 +5,7 @@ import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
 import { Layout, DocumentationSidebar } from '@components';
 import { Box, Badge, Button, Flex, Heading, Link, Container, Paragraph, Separator, styled } from '@design-system';
+import NextLink from 'next/link';
 
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import lightCodeTheme from 'prism-react-renderer/themes/vsLight';
@@ -25,7 +26,7 @@ const HighlightLanguage = styled('div', {
     backgroundColor: '$neutral4',
     color: '$hiContrast',
     textAlign: 'right',
-    fontWeight: '$bold'
+    fontWeight: '$bold',
 });
 
 const HighlightLine = styled('div', {
@@ -66,30 +67,43 @@ const SyntaxHighlighter = ({ children, ...props }) => {
     );
 };
 
-const Post = ({ frontMatter, slug, mdxSource, docs }) => {
+const Post = ({ frontMatter, slug, mdxSource, docs, docsOrder }) => {
     const components = {
         Badge,
         Box,
         Button,
-        h1: (props) => <Heading as="h1" size="4" {...props} />,
-        h2: (props) => <Heading as="h2" size="3" {...props} />,
-        h3: (props) => <Heading as="h3" size="2" {...props} />,
-        h4: (props) => <Heading as="h4" size="1" {...props} />,
-        h5: (props) => <Heading as="h5" {...props} />,
-        h6: (props) => <Heading as="h6" {...props} />,
+        Link: (props) => (
+            <NextLink href={props.href} passHref>
+                <Link {...props} />
+            </NextLink>
+        ),
+        h1: (props) => <Heading as="h1" size="4" css={{ mt: '$2' }} {...props} />,
+        h2: (props) => <Heading as="h2" size="3" css={{ mt: '$2' }} {...props} />,
+        h3: (props) => <Heading as="h3" size="2" css={{ mt: '$2' }} {...props} />,
+        h4: (props) => <Heading as="h4" size="1" css={{ mt: '$2' }} {...props} />,
+        h5: (props) => <Heading as="h5" css={{ mt: '$2' }} {...props} />,
+        h6: (props) => <Heading as="h6" css={{ mt: '$2' }} {...props} />,
         a: (props) => <Link {...props} />,
-        p: (props) => <Paragraph {...props} />,
-        hr: (props) => <Separator size="2" css={{ my: '$4' }} {...props} />,
+        p: (props) => <Paragraph css={{ py: '$1' }} {...props} />,
+        hr: (props) => <Separator size="stretch" css={{ my: '$4', mx: 'auto' }} {...props} />,
         code: (props) => <Box as="code" css={{ py: '$1', px: '$2', borderRadius: '$pill', backgroundColor: '$neutral4' }} {...props} />,
         pre: (props) => <SyntaxHighlighter {...props} />,
+        ul: (props) => <Box as="ul" css={{ listStyleType: 'disc', pl: '$6', color: '$hiContrast' }} {...props} />,
+        li: (props) => (
+            <Box as="li" css={{ m: 0 }} {...props}>
+                <Paragraph css={{ py: '$1' }} {...props}>
+                    {props.children}
+                </Paragraph>
+            </Box>
+        ),
     };
 
     return (
         <Layout>
             <Flex direction={{ '@initial': 'column', '@bp2': 'row' }}>
-                <DocumentationSidebar docs={docs} currentSlug={slug} />
-                <Box css={{ p: '$4' }}>
-                    <Heading as="h2" size="3" css={{color: '$accent10', fontWeight: '$bold'}}>
+                <DocumentationSidebar docs={docs} order={docsOrder} currentSlug={slug} />
+                <Box css={{ p: '$4', maxWidth: '1000px' }}>
+                    <Heading as="h2" size="3" css={{ color: '$accent10', fontWeight: '$bold' }}>
                         {frontMatter.title}
                     </Heading>
                     <MDXRemote {...mdxSource} components={components} />
@@ -149,12 +163,16 @@ export async function getStaticProps({ params: { slug } }) {
         }),
     );
 
+    // Defines the order in which articles will appear on the docs sidebar
+    const docsOrder = ['introduction', 'about', 'using-scratch-auth', 'migrating-from-fluffyscratch'];
+
     return {
         props: {
             frontMatter,
             slug,
             mdxSource,
             docs,
+            docsOrder,
         },
     };
 }

@@ -16,6 +16,10 @@ const StyledSeparator = styled(SeparatorPrimitive.Root, {
                 '&[data-orientation="horizontal"]': { width: 130 },
                 '&[data-orientation="vertical"]': { height: 130 },
             },
+            stretch: {
+                '&[data-orientation="horizontal"]': { width: '60%' },
+                '&[data-orientation="vertical"]': { height: '60%' },
+            },
             full: {
                 '&[data-orientation=horizontal]': { height: 1, width: '100%' },
                 '&[data-orientation=vertical]': { height: '100%', width: 1 },

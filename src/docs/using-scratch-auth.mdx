@@ -1,0 +1,115 @@
+---
+title: Using Scratch Auth in your website
+slug: using-scratch-auth
+---
+
+There are many possible ways of integrating Scratch Auth into your website, and the solution you choose will depend on your service's architecture.
+But don't be discouraged, the process is quite simple! If you ever get stuck along the way, feel free to reach out to [@Looky1173 on Scratch](https://scratch.mit.edu/users/Looky1173#comments).
+
+Let's get started!
+
+### First and foremost...
+
+**...it is very important that you understand the nature of Scratch Auth and how it works.**
+When you send a user to Scratch Auth, they will be required to verify their identity, that is to say who they are on Scratch.
+Once they do that (either through cloud data or by commenting), Scratch Auth will redirect them back to your service and tell you whether they have successfully verified their identity or not.
+Now, you can do anything you want with this information, and now it is up to you to handle your users' sessions.
+
+<Badge variant="accent">Important</Badge>
+<br />
+Scratch Auth tells you whether your users have successfully completed the authentication process (and if yes, their Scratch identity), **but nothing more!**
+
+---
+
+In conclusion, how you handle your users' sessions is your choice, and it will depend on a lot of factors,
+such as what programming languages you use, how you structure your frontend and backend, and more.
+The next section will introduce you to a general overview of how authentication on the web works;
+then we will look at implementing Scratch Auth in more specific programming languages and scenarios (backends and databases).
+
+### The principles of authentication on the web
+
+The two most common authentication systems are
+
+-   **session based authentication:** Session based authentication is one in which the user state is stored on the server's memory.
+    When using a session based auth system, the server creates and stores the session data in the server memory when the user logs in and then stores the session ID in a cookie on the user browser.
+    The session ID is then sent on subsequent requests to the server and the server compares it with the stored session data and proceeds to process the requested action.
+-   **token based authentication:** Token based authentication is one in which the user state is stored on the client.
+    In token based authentication, the user data is encrypted into a JWT (JSON Web Token) with a secret and then sent back to the client.
+    The JWT is then stored on the client side (with `localStorage` or in a cookie) and sent as a header for every subsequent request.
+    The server receives and validates the JWT before proceeding to send a response to the client.
+
+<br />
+
+<Badge variant="accent">Important</Badge>
+<br />
+**Session based authentication requires a database** or any other method for the server to store session data.
+
+---
+
+Let's take now a look at using Scratch Auth with session or token based authentication!
+
+### Using Scratch Auth in your website
+
+It is recommended that you opt for the token based authentication, as it doesn't require a backend and is quickly becoming a standard for RESTful APIs.
+
+<Badge>Note</Badge>
+<br />
+You can horizontally scroll code boxes on this documentation with **Shift** + **Mouse wheel** (or by tapping and dragging on mobile).
+
+#### With session based authentication
+
+JavaScript pseudo-code:
+
+```js
+/*
+ *JavaScript pseudo-code for using Scratch Auth with session based authentication
+ */
+
+// STEP 1: Redirect the user to Scratch Auth (could happen on the frontend as well as the backend)
+// The redirect location is the Base64 encoded URL that Scratch Auth will redirect the user to once they finish authenticating
+// This should be the endpoint of your website that will handle Scratch Auth's response
+let redirectLocation = new Buffer('https://api.example.com/handle').toString('base64');
+res.redirect(`https://auth.itinerary.eu.org/auth/?redirect${redirectLocation}&name=Scratch Auth Tutorial`);
+
+// STEP 2: The user was redirected to `https://api.example.com/handle`, your API endpoint (happens on the backend)
+import crypto from 'crypto';
+
+// Scratch Auth will add some query parameters to your API endpoint, for example, `privateCode`
+const { privateCode } = req.query;
+
+// You have to verify whether the user has successfully completed the authentication process
+fetch(`https://auth.itinerary.eu.org/api/auth/verifyToken?privateCode=${privateCode}`, { method: 'GET' })
+    .then((response) => response.json())
+    .then((data) => {
+        // The `data` object sent by Scratch Auth will contain notably a `valid` property and a `username` property
+        // If `valid` is `true`, the user has successfully completed authentication process
+        if (data.valid === true) {
+            // Generate a session document for the user and store it in the database
+            let sessionId = crypto.randomUUID();
+            Database.collection('sessions').insertOne({ sessionId: sessionId, username: data.username });
+            // Respond to the client with the designated session ID
+            // The client should store this in a session cookie
+            res.status(200).json({ sessionId: sessionId });
+        } else {
+            // Respond to the client with an error
+            res.status(403).json({ error: 'Authentication failed' });
+        }
+    });
+```
+
+Finally, whenever the client makes a request to the backend that requires authentication, send the session ID and make the server verify that that session actually exists!
+
+#### With session token authentication
+
+This approach essentially follows the same two steps (outlined above) as session based authentication, except instead of inserting a record into a database with a session ID,
+the server generates a "token" encrypted with a secret key and sends that to the client. Then, when the client needs to make a request to a protected API endpoint (one that requires authentication),
+it sends its locally stored token to the server for verification.
+
+**An excellent library to implement token based authentication is [`iron-session`](https://github.com/vvo/iron-session).** Scratch Incubator uses it too!
+
+---
+
+### Celebrate
+
+**Congratulations, you have successfully implemented Scratch Auth in your website!**
+Don't forget to leave a comment on [@Looky1173's Scratch profile](https://scratch.mit.edu/users/Looky1173#comments) with your website's address to get it added to the <Link href="/documentation/about">About</Link> section of the docs.

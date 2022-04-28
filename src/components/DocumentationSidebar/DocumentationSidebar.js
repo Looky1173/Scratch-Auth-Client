@@ -39,7 +39,7 @@ const DocumentationSidebarContainer = styled(Box, {
     borderRadius: '$4 0 $4 0',
 });
 
-function DocumentationSidebar({ docs, currentSlug }) {
+function DocumentationSidebar({ docs, order, currentSlug }) {
     //const router = useRouter();
     //const { slug } = router.query;
 
@@ -49,13 +49,15 @@ function DocumentationSidebar({ docs, currentSlug }) {
                 Documentation
             </Heading>
             <Flex direction="column">
-                {docs.sort((a, b) => Number(a.frontMatter.order) - Number(b.frontMatter.order)).map((article, index) => (
-                    <NextLink href={`/documentation/${article.slug}`}>
-                        <ArticleCard key={index} variant={currentSlug === article.slug ? 'active' : null}>
-                            {article.frontMatter.title}
-                        </ArticleCard>
-                    </NextLink>
-                ))}
+                {docs
+                    .sort((a, b) => order.indexOf(a.frontMatter.slug) - order.indexOf(b.frontMatter.slug))
+                    .map((article, index) => (
+                        <NextLink href={`/documentation/${article.slug}`}>
+                            <ArticleCard key={index} variant={currentSlug === article.slug ? 'active' : null}>
+                                {article.frontMatter.title}
+                            </ArticleCard>
+                        </NextLink>
+                    ))}
             </Flex>
         </DocumentationSidebarContainer>
     );

@@ -1,21 +1,24 @@
 ---
 title: Migrating from FluffyScratch
-order: 2
+slug: migrating-from-fluffyscratch
 ---
 
 Are you looking to make the switch from FluffyScratch to Scratch Auth? **Good news, it's as simple as changing <Box as="span" css={{color: '$accent10'}}>two lines</Box> of code!**
 
 <br />
 
-<Badge variant="accent">Step 1</Badge>\
+<Badge variant="accent">Step 1</Badge>
+<br />
 Change `https://fluffyscratch.hampton.pw/auth/getKeys/v2?redirect=:redirectLocation` to `https://auth.itinerary.eu.org/auth/?redirect=:redirectLocation`.
 
 **Tip:** You can also add an optional `name` query parameter containg the name of your service. It will then show up on the login page.
 
 <br />
 
-<Badge variant="accent">Step 2</Badge>\
-Change `https://fluffyscratch.hampton.pw/auth/verify/v2/:privateCode` to `https://auth.itinerary.eu.org/api/auth/verifyToken?privateCode=:privateCode`. Scratch Auth will return the same object as Fluffy Scratch does, with some additional keys:
+<Badge variant="accent">Step 2</Badge>
+<br />
+Change `https://fluffyscratch.hampton.pw/auth/verify/v2/:privateCode` to `https://auth.itinerary.eu.org/api/auth/verifyToken?privateCode=:privateCode`. Scratch Auth will return the same object as
+Fluffy Scratch does, with some additional keys:
 
 ```js
 {
