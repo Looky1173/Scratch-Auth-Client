@@ -69,7 +69,7 @@ JavaScript pseudo-code:
 // The redirect location is the Base64 encoded URL that Scratch Auth will redirect the user to once they finish authenticating
 // This should be the endpoint of your website that will handle Scratch Auth's response
 let redirectLocation = new Buffer('https://api.example.com/handle').toString('base64');
-res.redirect(`https://auth.itinerary.eu.org/auth/?redirect${redirectLocation}&name=Scratch Auth Tutorial`);
+res.redirect(`https://auth.itinerary.eu.org/auth/?redirect=${redirectLocation}&name=Scratch Auth Tutorial`);
 
 // STEP 2: The user was redirected to `https://api.example.com/handle`, your API endpoint (happens on the backend)
 import crypto from 'crypto';
