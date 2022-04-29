@@ -57,6 +57,13 @@ const Footer = () => {
                                     </NextLink>
                                 </Text>
                             </li>
+                            <li>
+                                <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
+                                    <Link variant="subtle" target="_blank" href="https://scratch.mit.edu/discuss/topic/597434/" css={{display: 'inline-flex'}}>
+                                        Forum topic <OpenInNewWindowIcon width={15} height={15} />
+                                    </Link>
+                                </Text>
+                            </li>
                         </ul>
                     </Box>
                     <Box>
