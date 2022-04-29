@@ -31,7 +31,7 @@ then we will look at implementing Scratch Auth in more specific programming lang
 The two most common authentication systems are
 
 -   **session based authentication:** Session based authentication is one in which the user state is stored on the server's memory.
-    When using a session based auth system, the server creates and stores the session data in the server memory when the user logs in and then stores the session ID in a cookie on the user browser.
+    When using a session based auth system, the server creates and stores the session data in the server memory (commonly in a database) when the user logs in and then stores the session ID in a cookie on the user browser.
     The session ID is then sent on subsequent requests to the server and the server compares it with the stored session data and proceeds to process the requested action.
 -   **token based authentication:** Token based authentication is one in which the user state is stored on the client.
     In token based authentication, the user data is encrypted into a JWT (JSON Web Token) with a secret and then sent back to the client.
