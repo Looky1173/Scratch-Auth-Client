@@ -43,6 +43,13 @@ const Footer = () => {
                                     </NextLink>
                                 </Text>
                             </li>
+                            <li>
+                                <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
+                                    <NextLink href="/documentation/about" passHref>
+                                        <Link variant="subtle">About</Link>
+                                    </NextLink>
+                                </Text>
+                            </li>
                         </ul>
                     </Box>
                     <Box>
