@@ -59,7 +59,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
-                                    <Link variant="subtle" target="_blank" href="https://scratch.mit.edu/discuss/topic/597434/" css={{display: 'inline-flex'}}>
+                                    <Link variant="subtle" target="_blank" href="https://scratch.mit.edu/discuss/topic/597434/" css={{ display: 'inline-flex' }}>
                                         Forum topic <OpenInNewWindowIcon width={15} height={15} />
                                     </Link>
                                 </Text>
@@ -73,28 +73,28 @@ const Footer = () => {
                         <ul>
                             <li>
                                 <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
-                                    <Link variant="subtle" target="_blank" href="https://beta.itinerary.eu.org" css={{display: 'inline-flex'}}>
+                                    <Link variant="subtle" target="_blank" href="https://beta.itinerary.eu.org" css={{ display: 'inline-flex' }}>
                                         Incubator <OpenInNewWindowIcon width={15} height={15} />
                                     </Link>
                                 </Text>
                             </li>
                             <li>
                                 <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
-                                    <Link variant="subtle" target="_blank" href="https://itinerary.eu.org" css={{display: 'inline-flex'}}>
+                                    <Link variant="subtle" target="_blank" href="https://itinerary.eu.org" css={{ display: 'inline-flex' }}>
                                         Itinerary <OpenInNewWindowIcon width={15} height={15} />
                                     </Link>
                                 </Text>
                             </li>
                             <li>
                                 <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
-                                    <Link variant="subtle" target="_blank" href="https://scratchtools.edu.eu.org" css={{display: 'inline-flex'}}>
+                                    <Link variant="subtle" target="_blank" href="https://scratchtools.edu.eu.org" css={{ display: 'inline-flex' }}>
                                         Scratch Tools <OpenInNewWindowIcon width={15} height={15} />
                                     </Link>
                                 </Text>
                             </li>
                             <li>
                                 <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
-                                    <Link variant="subtle" target="_blank" href="https://scratch.mit.edu/users/Looky1173/#comments" css={{display: 'inline-flex'}}>
+                                    <Link variant="subtle" target="_blank" href="https://scratch.mit.edu/users/Looky1173/#comments" css={{ display: 'inline-flex' }}>
                                         Feedback <OpenInNewWindowIcon width={15} height={15} />
                                     </Link>
                                 </Text>
