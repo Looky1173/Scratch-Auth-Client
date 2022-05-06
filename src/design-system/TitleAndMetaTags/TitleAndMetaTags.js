@@ -19,7 +19,8 @@ const TitleAndMetaTags = ({
             <title>{title}</title>
             <meta name="description" content={description} />
             <meta name="viewport" content="width=device-width" />
-            <link rel="icon" href="/favicon.ico" />
+
+            <link rel="alternate icon" href="/favicon.ico" sizes="any" />
             <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
             <meta property="og:url" content={`${url}${path}`} />
