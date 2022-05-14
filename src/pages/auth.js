@@ -307,8 +307,36 @@ export default function Auth() {
             duration: Infinity,
         });
 
-        let token = await fetch(`/api/auth/accounts?username=${username}&redirect=${providerData?.redirectLocation}`, { method: 'POST' });
-        token = await token.json();
+        try {
+            let token = await fetch(`/api/auth/accounts?username=${username}&redirect=${providerData?.redirectLocation}`, { method: 'POST' });
+            token = await token.json();
+        } catch {
+            deleteToast(signingInToast);
+            setLoadingOneClickSignIn(false);
+            toast({
+                customContent: (
+                    <Box>
+                        <Heading as="h2" css={{ mb: '$1', color: '$danger11', display: 'inline-flex', alignItems: 'center' }}>
+                            <Box css={{ mr: '$1' }}>
+                                <ExclamationTriangleIcon width={18} height={18} />
+                            </Box>
+                            Ka-boom!
+                        </Heading>
+                        <Text>
+                            We couldn't sign you in because something broke on our end. Please try again in a few moments. Also, keep an eye on our{' '}
+                            <Link target="_blank" href="https://stats.uptimerobot.com/4Ggz4Fzo2O" css={{ display: 'inline-flex' }}>
+                                status page <OpenInNewWindowIcon width={15} height={15} />
+                            </Link>{' '}
+                            for further information.
+                        </Text>
+                    </Box>
+                ),
+                variant: 'danger',
+                duration: 15 * 1000,
+            });
+
+            return;
+        }
 
         if (token.success === true) {
             location.href = `${redirect}?privateCode=${token.instantPrivateCode}`;
