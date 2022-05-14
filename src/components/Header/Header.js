@@ -3,7 +3,7 @@ import { Badge, Box, Button, Card, Container, Flex, Link, Text, Heading, Popover
 import ThemeToggle from '../ThemeToggle';
 import Logo from '../Logo';
 import { useAccounts } from '@hooks';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon, ExclamationTriangleIcon, OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import { useState, useEffect } from 'react';
 import fetchJson from '@/utils/fetch-json';
 import { useRouter } from 'next/router';
@@ -27,7 +27,7 @@ const AccountExpiry = styled(Box, {
 });
 
 function Header({ withSecondaryHeader, secondaryHeader }) {
-    const { accounts, mutateAccounts } = useAccounts();
+    const { accounts, error: accountError, mutateAccounts } = useAccounts();
     const router = useRouter();
     const [redirect, setRedirect] = useState(undefined);
 
@@ -110,19 +110,48 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                     >
                         <Text>GitHub</Text>
                     </Link>
-                    {accounts === undefined && (
+                    {accounts === undefined && !accountError && (
                         <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' }, width: '7.5rem' }}>
                             {<Skeleton />}
                         </Link>
                     )}
-                    {accounts?.isIdentified === false && (
+                    {accountError && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Link variant="danger" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
+                                    <Text as="div" bold css={{ display: 'inline-flex' }}>
+                                        <Box css={{ mr: '$1' }}>
+                                            <ExclamationTriangleIcon width={18} height={18} />
+                                        </Box>
+                                        Ka-boom!
+                                        <Box css={{ ml: '$1' }}>
+                                            <ChevronDownIcon width={18} height={18} />
+                                        </Box>
+                                    </Text>
+                                </Link>
+                            </PopoverTrigger>
+                            <PopoverContent variant="danger" sideOffset={10} align="end" css={{ width: '20rem' }}>
+                                <Heading as="h2" css={{ mb: '$1', color: '$danger11' }}>
+                                    Well, this is awkward!
+                                </Heading>
+                                <Text>
+                                    We couldn't retrieve your accounts because something broke on our end. Keep an eye on our{' '}
+                                    <Link target="_blank" href="https://stats.uptimerobot.com/4Ggz4Fzo2O" css={{ display: 'inline-flex' }}>
+                                        status page <OpenInNewWindowIcon width={15} height={15} />
+                                    </Link>{' '}
+                                    for further information.
+                                </Text>
+                            </PopoverContent>
+                        </Popover>
+                    )}
+                    {accounts?.isIdentified === false && !accountError && (
                         <NextLink href={redirect === undefined ? '/auth?newOneClickSignInAccount=true' : `/auth?newOneClickSignInAccount=true&redirect=${redirect}`} passHref>
                             <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
                                 <Text>Add a Scratch account</Text>
                             </Link>
                         </NextLink>
                     )}
-                    {accounts?.isIdentified === true && (
+                    {accounts?.isIdentified === true && !accountError && (
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>

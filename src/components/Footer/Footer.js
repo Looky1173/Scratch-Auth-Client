@@ -71,6 +71,13 @@ const Footer = () => {
                                     </Link>
                                 </Text>
                             </li>
+                            <li>
+                                <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
+                                    <Link variant="subtle" target="_blank" href="https://stats.uptimerobot.com/4Ggz4Fzo2O" css={{ display: 'inline-flex' }}>
+                                        Status page <OpenInNewWindowIcon width={15} height={15} />
+                                    </Link>
+                                </Text>
+                            </li>
                         </ul>
                     </Box>
                     <Box>

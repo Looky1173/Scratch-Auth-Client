@@ -1,6 +1,24 @@
-import { Box, Button, Card, Checkbox, CheckboxIndicator, Container, Text, Flex, Grid, Heading, TitleAndMetaTags, styled, Paragraph, Skeleton, ToastTitle, ToastDescription } from '@design-system';
+import {
+    Box,
+    Button,
+    Card,
+    Link,
+    Checkbox,
+    CheckboxIndicator,
+    Container,
+    Text,
+    Flex,
+    Grid,
+    Heading,
+    TitleAndMetaTags,
+    styled,
+    Paragraph,
+    Skeleton,
+    ToastTitle,
+    ToastDescription,
+} from '@design-system';
 import { Layout } from '@components';
-import { ArrowLeftIcon, OpenInNewWindowIcon, CheckIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, OpenInNewWindowIcon, CheckIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useToast, useAccounts } from '@hooks';
@@ -12,12 +30,6 @@ const OptionCard = styled(Card, {
     cursor: 'pointer',
     transition: 'background-color 300ms ease',
     color: '$hiContrast',
-    '&:hover': {
-        backgroundColor: '$neutral4',
-    },
-    '&:active': {
-        backgroundColor: '$neutral6',
-    },
     '&[disabled]': {
         cursor: 'not-allowed',
         pointerEvents: 'none',
@@ -26,11 +38,27 @@ const OptionCard = styled(Card, {
     },
     variants: {
         variant: {
+            default: {
+                '&:hover': {
+                    backgroundColor: '$neutral4',
+                },
+                '&:active': {
+                    backgroundColor: '$neutral6',
+                },
+            },
             loading: {
                 cursor: 'auto',
                 pointerEvents: 'none',
             },
+            danger: {
+                cursor: 'auto',
+                transition: 'none',
+                backgroundColor: '$danger2',
+            },
         },
+    },
+    defaultVariants: {
+        variant: 'default',
     },
 });
 
@@ -83,7 +111,7 @@ export default function Auth() {
     const [newOneClickSignInAccount, setNewOneClickSignInAccount] = useState(false);
 
     const router = useRouter();
-    const { accounts, mutateAccounts } = useAccounts();
+    const { accounts, error: accountError, mutateAccounts } = useAccounts();
     const [toast, deleteToast] = useToast();
 
     useEffect(() => {
@@ -95,9 +123,39 @@ export default function Auth() {
 
     async function getTokens() {
         setAuthenticationTokens({ cloud: null, comment: null });
-        let tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}`);
-        tokens = await tokens.json();
-        setAuthenticationTokens({ ...authenticationTokens, [authenticationMethod]: { ...tokens, time: Date.now() } });
+        try {
+            let tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}`);
+            tokens = await tokens.json();
+            setAuthenticationTokens({ ...authenticationTokens, [authenticationMethod]: { ...tokens, time: Date.now() } });
+        } catch {
+            setHasChosenAuthMethod(false);
+            setOpenedAuthenticationProject(false);
+            setAuthenticationTokens({ cloud: null, comment: null });
+            setIsVerifying(false);
+            clearTimeout(tokenValidityTimeout.current);
+
+            toast({
+                customContent: (
+                    <Box>
+                        <Heading as="h2" css={{ mb: '$1', color: '$danger11', display: 'inline-flex', alignItems: 'center' }}>
+                            <Box css={{ mr: '$1' }}>
+                                <ExclamationTriangleIcon width={18} height={18} />
+                            </Box>
+                            Ka-boom!
+                        </Heading>
+                        <Text>
+                            We couldn't generate you a sign in code because something broke on our end. Please try again in a few moments. Also, keep an eye on our{' '}
+                            <Link target="_blank" href="https://stats.uptimerobot.com/4Ggz4Fzo2O" css={{ display: 'inline-flex' }}>
+                                status page <OpenInNewWindowIcon width={15} height={15} />
+                            </Link>{' '}
+                            for further information.
+                        </Text>
+                    </Box>
+                ),
+                variant: 'danger',
+                duration: 15 * 1000,
+            });
+        }
     }
 
     function verifyTokenValidity() {
@@ -145,8 +203,45 @@ export default function Auth() {
         }
 
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
-            let token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`, { method: 'GET' });
-            token = await token.json();
+            try {
+                let token = await fetch(
+                    `/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`,
+                    {
+                        method: 'GET',
+                    },
+                );
+                token = await token.json();
+            } catch {
+                setHasChosenAuthMethod(false);
+                setOpenedAuthenticationProject(false);
+                setAuthenticationTokens({ cloud: null, comment: null });
+                setIsVerifying(false);
+                clearTimeout(tokenValidityTimeout.current);
+
+                toast({
+                    customContent: (
+                        <Box>
+                            <Heading as="h2" css={{ mb: '$1', color: '$danger11', display: 'inline-flex', alignItems: 'center' }}>
+                                <Box css={{ mr: '$1' }}>
+                                    <ExclamationTriangleIcon width={18} height={18} />
+                                </Box>
+                                Ka-boom!
+                            </Heading>
+                            <Text>
+                                We couldn't sign you in because something broke on our end. Please try again in a few moments. Also, keep an eye on our{' '}
+                                <Link target="_blank" href="https://stats.uptimerobot.com/4Ggz4Fzo2O" css={{ display: 'inline-flex' }}>
+                                    status page <OpenInNewWindowIcon width={15} height={15} />
+                                </Link>{' '}
+                                for further information.
+                            </Text>
+                        </Box>
+                    ),
+                    variant: 'danger',
+                    duration: 15 * 1000,
+                });
+
+                return;
+            }
 
             if (token.valid !== true) {
                 setHasChosenAuthMethod(false);
@@ -345,50 +440,68 @@ export default function Auth() {
                                 <Heading as="h2" css={{ mb: '$1', color: '$neutral11' }}>
                                     One-click sign in
                                 </Heading>
-                                {accounts?.isIdentified !== undefined ? (
-                                    accounts?.accounts?.length === 0 || accounts?.isIdentified === false ? (
-                                        <NextLink
-                                            href={
-                                                providerData?.redirectLocation === undefined
-                                                    ? '/auth?newOneClickSignInAccount=true'
-                                                    : `/auth?newOneClickSignInAccount=true&redirect=${providerData.redirectLocation}`
-                                            }
-                                            passHref
-                                        >
-                                            <Button as="a" variant="accent" css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}>
-                                                {accounts?.isIdentified === false ? 'Add a Scratch account' : 'Add a new account'}
-                                            </Button>
-                                        </NextLink>
-                                    ) : (
-                                        accounts?.accounts?.map((account, index) => (
-                                            <OptionCard
-                                                key={index}
-                                                variant="interactive"
-                                                disabled={loadingOneClickSignIn}
-                                                onClick={() => {
-                                                    oneClickSignIn(account.username);
-                                                }}
-                                                css={{ mb: index !== accounts?.accounts.length - 1 ? '$4' : '$2' }}
+                                {!accountError &&
+                                    (accounts?.isIdentified !== undefined ? (
+                                        accounts?.accounts?.length === 0 || accounts?.isIdentified === false ? (
+                                            <NextLink
+                                                href={
+                                                    providerData?.redirectLocation === undefined
+                                                        ? '/auth?newOneClickSignInAccount=true'
+                                                        : `/auth?newOneClickSignInAccount=true&redirect=${providerData.redirectLocation}`
+                                                }
+                                                passHref
                                             >
-                                                {new Date(account.updated) < new Date(Date.now() - 27 * 24 * 60 * 60 * 1000) === true && <AccountExpiry>Expires soon</AccountExpiry>}
-                                                <Heading as="h3" css={{ color: 'inherit' }}>
-                                                    {account.username}
+                                                <Button as="a" variant="accent" css={{ display: 'inline-flex', justifyContent: 'center', width: '100%', my: '$1' }}>
+                                                    {accounts?.isIdentified === false ? 'Add a Scratch account' : 'Add a new account'}
+                                                </Button>
+                                            </NextLink>
+                                        ) : (
+                                            accounts?.accounts?.map((account, index) => (
+                                                <OptionCard
+                                                    key={index}
+                                                    variant="interactive"
+                                                    disabled={loadingOneClickSignIn}
+                                                    onClick={() => {
+                                                        oneClickSignIn(account.username);
+                                                    }}
+                                                    css={{ mb: index !== accounts?.accounts.length - 1 ? '$4' : '$2' }}
+                                                >
+                                                    {new Date(account.updated) < new Date(Date.now() - 27 * 24 * 60 * 60 * 1000) === true && <AccountExpiry>Expires soon</AccountExpiry>}
+                                                    <Heading as="h3" css={{ color: 'inherit' }}>
+                                                        {account.username}
+                                                    </Heading>
+                                                    <Text css={{ lineHeight: 1.3, color: 'inherit' }}>Last used to sign in at {new Date(account.updated).toLocaleString()}</Text>
+                                                </OptionCard>
+                                            ))
+                                        )
+                                    ) : (
+                                        [...Array(Number(2))].map((value, index) => (
+                                            <OptionCard key={index} variant="loading" css={{ mb: index !== 1 ? '$4' : 0 }}>
+                                                <Heading as="h3">
+                                                    <Skeleton width={`${getRandomInt(5, 10)}em`} />
                                                 </Heading>
-                                                <Text css={{ lineHeight: 1.3, color: 'inherit' }}>Last used to sign in at {new Date(account.updated).toLocaleString()}</Text>
+                                                <Text css={{ lineHeight: 1.3 }}>
+                                                    <Skeleton width={`${getRandomInt(10, 20)}em`} />
+                                                </Text>
                                             </OptionCard>
                                         ))
-                                    )
-                                ) : (
-                                    [...Array(Number(2))].map((value, index) => (
-                                        <OptionCard key={index} variant="loading" css={{ mb: index !== 1 ? '$4' : 0 }}>
-                                            <Heading as="h3">
-                                                <Skeleton width={`${getRandomInt(5, 10)}em`} />
-                                            </Heading>
-                                            <Text css={{ lineHeight: 1.3 }}>
-                                                <Skeleton width={`${getRandomInt(10, 20)}em`} />
-                                            </Text>
-                                        </OptionCard>
-                                    ))
+                                    ))}
+                                {accountError && (
+                                    <OptionCard variant="danger">
+                                        <Heading as="h2" css={{ mb: '$1', color: '$danger11', display: 'inline-flex', alignItems: 'center' }}>
+                                            <Box css={{ mr: '$1' }}>
+                                                <ExclamationTriangleIcon width={18} height={18} />
+                                            </Box>
+                                            Ka-boom!
+                                        </Heading>
+                                        <Text>
+                                            We couldn't retrieve your accounts because something broke on our end. Keep an eye on our{' '}
+                                            <Link target="_blank" href="https://stats.uptimerobot.com/4Ggz4Fzo2O" css={{ display: 'inline-flex' }}>
+                                                status page <OpenInNewWindowIcon width={15} height={15} />
+                                            </Link>{' '}
+                                            for further information.
+                                        </Text>
+                                    </OptionCard>
                                 )}
                                 <Text css={{ lineHeight: 1.3 }}>One click sign in accounts expire after 30 days of not being used. Using one to sign in will reset its expiry date.</Text>
                             </Box>

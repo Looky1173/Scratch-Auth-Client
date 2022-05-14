@@ -56,6 +56,13 @@ const Link = styled('a', {
                     outlineColor: '$accent10',
                 },
             },
+            danger: {
+                color: '$danger11',
+                textDecorationColor: '$danger4',
+                '&:focus': {
+                    outlineColor: '$danger8',
+                },
+            }
         },
     },
     defaultVariants: {
