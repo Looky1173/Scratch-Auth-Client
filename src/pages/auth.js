@@ -203,8 +203,9 @@ export default function Auth() {
         }
 
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
+            let token;
             try {
-                let token = await fetch(
+                token = await fetch(
                     `/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`,
                     {
                         method: 'GET',
@@ -307,8 +308,10 @@ export default function Auth() {
             duration: Infinity,
         });
 
+        let token;
+
         try {
-            let token = await fetch(`/api/auth/accounts?username=${username}&redirect=${providerData?.redirectLocation}`, { method: 'POST' });
+            token = await fetch(`/api/auth/accounts?username=${username}&redirect=${providerData?.redirectLocation}`, { method: 'POST' });
             token = await token.json();
         } catch {
             deleteToast(signingInToast);
