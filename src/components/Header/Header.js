@@ -111,7 +111,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
 
     return (
         <>
-            <Banner CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />
+            <Banner key="scratch-game-jam-questionnaire" CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />
             <Flex
                 as="header"
                 css={{
