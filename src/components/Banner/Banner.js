@@ -39,20 +39,20 @@ function getWithExpiry(key) {
     return item.value;
 }
 
-function Banner({ key, expiry = 7 * 24 * 60 * 60 * 1000, closeable, message, CustomContent }) {
+function Banner({ identifier, expiry = 7 * 24 * 60 * 60 * 1000, closeable, message, CustomContent }) {
     const [isVisible, setVisibility] = useState(false);
 
     const dismissBanner = () => {
         setVisibility(false);
-        setWithExpiry(`banner-${key}`, { isVisible: false }, expiry);
+        setWithExpiry(`banner-${identifier}`, { isVisible: false }, expiry);
     };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const bannerState = getWithExpiry(`banner-${key}`);
+            const bannerState = getWithExpiry(`banner-${identifier}`);
             if (!bannerState) {
                 setVisibility(true);
-                setWithExpiry(`banner-${key}`, { isVisible: true }, expiry);
+                setWithExpiry(`banner-${identifier}`, { isVisible: true }, expiry);
             } else {
                 setVisibility(bannerState?.isVisible || false);
             }
