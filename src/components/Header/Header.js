@@ -1,12 +1,18 @@
 import NextLink from 'next/link';
-import { Badge, Box, Button, Card, Container, Flex, Link, Text, Heading, Popover, PopoverTrigger, PopoverContent, PopoverClose, Separator, Skeleton, styled } from '@design-system';
+import { Badge, Box, Button, Card, Container, Flex, Link, Text, Heading, Popover, PopoverTrigger, PopoverContent, PopoverClose, Separator, Skeleton, styled, keyframes } from '@design-system';
 import ThemeToggle from '../ThemeToggle';
 import Logo from '../Logo';
+import Banner from '../Banner';
 import { useAccounts } from '@hooks';
 import { ChevronDownIcon, ExclamationTriangleIcon, OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import { useState, useEffect } from 'react';
 import fetchJson from '@/utils/fetch-json';
 import { useRouter } from 'next/router';
+
+const questionnaireBannerAnimation = keyframes({
+    '0%': { transform: 'translate(-40%, 5%) rotate(15deg)' },
+    '100%': { transform: 'translate(-10%, -75%) rotate(15deg)' },
+});
 
 const AccountCard = styled(Card, {
     backgroundColor: '$loContrast',
@@ -25,6 +31,58 @@ const AccountExpiry = styled(Box, {
     fontSize: '$2',
     px: '$2',
 });
+
+function QuestionnaireBanner({ dismiss }) {
+    return (
+        <Box css={{ position: 'relative', backgroundColor: '$accent10', color: '$loContrast', overflow: 'hidden' }}>
+            <Flex direction="column" css={{ p: '$4', '@bp2': { mr: '25rem' } }}>
+                <Heading as="h3" size="3" css={{ color: 'inherit', mb: '$2' }}>
+                    Questionnaire - Scratch Game Jams
+                </Heading>
+                <Text css={{ color: 'inherit', fontSize: '$6', lineHeight: 1.3, mb: '$4' }}>
+                    Imagine a platform where Scratchers could create and participate in game jams (competitions), with podiums, deadlines, teams and more! Would you be interested in such a platform?{' '}
+                    <Box as="span" css={{ fontWeight: '$bold' }}>
+                        Let us know by filling out our 2-minute questionnaire!
+                    </Box>
+                </Text>
+                <Flex css={{ mb: '$2' }}>
+                    <Button as="a" href="https://forms.gle/K11UXQHXwCDE9zVSA" target="_blank" variant="accent" css={{ mr: '$4' }}>
+                        Fill out the form
+                        <Box css={{ ml: '$1' }}>
+                            <OpenInNewWindowIcon width={24} height={24} />
+                        </Box>
+                    </Button>
+                    <Text
+                        onClick={dismiss}
+                        css={{ height: '$7', color: 'inherit', fontWeight: '$medium', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', '&:hover': { opacity: 0.9 } }}
+                    >
+                        Dismiss banner
+                    </Text>
+                </Flex>
+            </Flex>
+            <Box
+                as="img"
+                src="/scratchblocks.png"
+                css={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    height: '30rem',
+                    transform: 'translate(-30%, -10%) rotate(15deg)',
+                    mixBlendMode: 'luminosity',
+                    animation: 'none',
+                    display: 'none',
+                    '@bp2': {
+                        display: 'block',
+                    },
+                    '@bp3': {
+                        animation: `20s ease-in-out infinite alternate ${questionnaireBannerAnimation}`,
+                    },
+                }}
+            ></Box>
+        </Box>
+    );
+}
 
 function Header({ withSecondaryHeader, secondaryHeader }) {
     const { accounts, error: accountError, mutateAccounts } = useAccounts();
@@ -53,6 +111,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
 
     return (
         <>
+            <Banner CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />
             <Flex
                 as="header"
                 css={{
