@@ -152,7 +152,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                     </Flex>
                 </Flex>
             </STCensorNotice>
-            <Banner identifier="scratch-game-jam-questionnaire" CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />
+            {/*<Banner identifier="scratch-game-jam-questionnaire" CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />*/}
             <Flex
                 as="header"
                 css={{
