@@ -32,6 +32,12 @@ const AccountExpiry = styled(Box, {
     px: '$2',
 });
 
+const STCensorNotice = styled(Flex, {
+    p: '$4',
+    backgroundColor: '$danger10',
+    color: '$loContrast',
+});
+
 function QuestionnaireBanner({ dismiss }) {
     return (
         <Box css={{ position: 'relative', backgroundColor: '$accent10', color: '$loContrast', overflow: 'hidden' }}>
@@ -111,6 +117,41 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
 
     return (
         <>
+            <STCensorNotice>
+                <Flex>
+                    <Box css={{ flex: 'none' }}>
+                        <ExclamationTriangleIcon width={64} height={64} />
+                    </Box>
+                    <Flex direction="column" css={{ ml: '$4' }}>
+                        <Heading as="h3" size="2" css={{ color: 'inherit', mb: '$2' }}>
+                            Important notice
+                        </Heading>
+                        <Text css={{ color: 'inherit' }}>
+                            <strong>
+                                On June 6<sup>th</sup> 2022 the Scratch Team censored the Scratch Auth project, deleted the forum topic, and removed all links leading to Scratch Auth - and even to
+                                Itinerary - from the Scratch website!
+                            </strong>{' '}
+                            They claimed that Scratch Auth and Itinerary posed a threat to the Scratch community: "
+                            <i>
+                                Please do not share external links to inappropriate sites, link shorteners, browser extensions, or userscripts on Scratch. These are a safety concern, as they can hide
+                                malicious content.
+                            </i>
+                            "
+                            <br />
+                            <br />
+                            <strong>This means that Scratch Auth is currently NOT functional.</strong>
+                        </Text>
+                        <Flex css={{ mt: '$4' }}>
+                            <Button as="a" href="https://scratch.mit.edu/discuss/topic/609816/" target="_blank" variant="danger">
+                                Learn more
+                                <Box css={{ ml: '$1' }}>
+                                    <OpenInNewWindowIcon width={24} height={24} />
+                                </Box>
+                            </Button>
+                        </Flex>
+                    </Flex>
+                </Flex>
+            </STCensorNotice>
             <Banner identifier="scratch-game-jam-questionnaire" CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />
             <Flex
                 as="header"
