@@ -128,7 +128,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                         </Heading>
                         <Text css={{ color: 'inherit' }}>
                             <strong>
-                                On June 6<sup>th</sup> 2022 the Scratch Team censored the Scratch Auth project, deleted the forum topic, and removed all links leading to Scratch Auth - and even to
+                                On June 3<sup>rd</sup> 2022 the Scratch Team censored the Scratch Auth project, deleted the forum topic, and removed all links leading to Scratch Auth - and even to
                                 Itinerary - from the Scratch website!
                             </strong>{' '}
                             They claimed that Scratch Auth and Itinerary posed a threat to the Scratch community: "
