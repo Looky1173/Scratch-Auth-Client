@@ -96,13 +96,33 @@ const AccountExpiry = styled(Box, {
     px: '$2',
 });
 
+const UsernameInput = styled('input', {
+    borderRadius: '$4 0 0 $4',
+    p: '$2',
+    border: 'none',
+    fontSize: '$3',
+    color: '$neutral12',
+    backgroundColor: '$loContrast',
+    boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.1)',
+    '&:focus': {
+        boxShadow: 'inset 0 0 0 3px $colors$accent7',
+    },
+    '&:disabled': {
+        pointerEvents: 'none !important',
+        color: '$neutral8 !important',
+        backgroundColor: '$neutral3 !important',
+    },
+});
+
 export default function Auth() {
     const TOKEN_VALIDITY = 5 * 60 * 1000;
     const [hasChosenAuthMethod, setHasChosenAuthMethod] = useState(false);
     const [authenticationMethod, setAuthenticationMethod] = useState(null);
     const [openedAuthenticationProject, setOpenedAuthenticationProject] = useState(false);
+    const [enteredUsername, setEnteredUsername] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
-    const [authenticationTokens, setAuthenticationTokens] = useState({ cloud: null, comment: null });
+    const [authenticationTokens, setAuthenticationTokens] = useState({ cloud: null, comment: null, 'profile-comment': null });
+    const [username, setUsername] = useState(null);
     const tokenValidityTimeout = useRef(null);
     const [addUserToOneClickLoginList, setAddUserToOneClickLoginList] = useState(true);
     const [providerData, setProviderData] = useState(null);
@@ -122,15 +142,44 @@ export default function Auth() {
     }, [router.isReady, router.query]);
 
     async function getTokens() {
-        setAuthenticationTokens({ cloud: null, comment: null });
+        setAuthenticationTokens({ cloud: null, comment: null, 'profile-comment': null });
+        if (authenticationMethod === 'profile-comment' && !username) {
+            toast({
+                customContent: (
+                    <Box>
+                        <Heading as="h2" css={{ mb: '$1', color: '$danger11', display: 'inline-flex', alignItems: 'center' }}>
+                            <Box css={{ mr: '$1' }}>
+                                <ExclamationTriangleIcon width={18} height={18} />
+                            </Box>
+                            Oops!
+                        </Heading>
+                        <Text>You forgot to enter your username.</Text>
+                    </Box>
+                ),
+                variant: 'danger',
+                duration: 15 * 1000,
+            });
+
+            return;
+        }
+
         try {
-            let tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}`);
+            let tokens;
+
+            if (authenticationMethod === 'profile-comment') {
+                tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}&username=${username}`);
+            } else {
+                tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}`);
+            }
+
             tokens = await tokens.json();
             setAuthenticationTokens({ ...authenticationTokens, [authenticationMethod]: { ...tokens, time: Date.now() } });
         } catch {
             setHasChosenAuthMethod(false);
             setOpenedAuthenticationProject(false);
-            setAuthenticationTokens({ cloud: null, comment: null });
+            setEnteredUsername(false);
+            setAuthenticationTokens({ cloud: null, comment: null, 'profile-comment': null });
+            setUsername(null);
             setIsVerifying(false);
             clearTimeout(tokenValidityTimeout.current);
 
@@ -161,6 +210,7 @@ export default function Auth() {
     function verifyTokenValidity() {
         if (hasChosenAuthMethod === true) {
             if (!authenticationTokens[authenticationMethod] || authenticationTokens[authenticationMethod].time < new Date(Date.now() - TOKEN_VALIDITY)) {
+                if (authenticationMethod === 'profile-comment' && !username) return;
                 getTokens();
                 tokenValidityTimeout.current = setTimeout(() => {
                     verifyTokenValidity();
@@ -175,7 +225,7 @@ export default function Auth() {
         if (hasChosenAuthMethod === false) {
             clearTimeout(tokenValidityTimeout.current);
         }
-    }, [hasChosenAuthMethod]);
+    }, [hasChosenAuthMethod, enteredUsername]);
 
     useEffect(() => {
         return () => {
@@ -205,17 +255,16 @@ export default function Auth() {
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
             let token;
             try {
-                token = await fetch(
-                    `/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`,
-                    {
-                        method: 'GET',
-                    },
-                );
+                token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`, {
+                    method: 'GET',
+                });
                 token = await token.json();
             } catch {
                 setHasChosenAuthMethod(false);
                 setOpenedAuthenticationProject(false);
-                setAuthenticationTokens({ cloud: null, comment: null });
+                setEnteredUsername(false);
+                setAuthenticationTokens({ cloud: null, comment: null, 'profile-comment': null });
+                setUsername(null);
                 setIsVerifying(false);
                 clearTimeout(tokenValidityTimeout.current);
 
@@ -247,7 +296,9 @@ export default function Auth() {
             if (token.valid !== true) {
                 setHasChosenAuthMethod(false);
                 setOpenedAuthenticationProject(false);
-                setAuthenticationTokens({ cloud: null, comment: null });
+                setEnteredUsername(false);
+                setAuthenticationTokens({ cloud: null, comment: null, 'profile-comment': null });
+                setUsername(null);
                 setIsVerifying(false);
                 clearTimeout(tokenValidityTimeout.current);
 
@@ -425,7 +476,7 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('cloud');
                                 }}
-                                disabled={loadingOneClickSignIn}
+                                disabled={true || loadingOneClickSignIn}
                             >
                                 <Box
                                     css={{
@@ -452,17 +503,50 @@ export default function Auth() {
                             </OptionCard>
                             <OptionCard
                                 variant="interactive"
+                                css={{ mb: '$4' }}
                                 onClick={() => {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('comment');
                                 }}
-                                disabled={loadingOneClickSignIn}
+                                disabled={true || loadingOneClickSignIn}
                             >
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Comments
                                 </Heading>
                                 <Text css={{ lineHeight: 1.3, color: 'inherit' }}>
                                     Sign in by leaving a comment on a Scratch project! This option can be used by New Scratchers as well as Scratchers.
+                                </Text>
+                            </OptionCard>
+                            <OptionCard
+                                variant="interactive"
+                                css={{ mb: '$4' }}
+                                onClick={() => {
+                                    setHasChosenAuthMethod(true);
+                                    setAuthenticationMethod('profile-comment');
+                                }}
+                                disabled={loadingOneClickSignIn}
+                            >
+                                <Box
+                                    css={{
+                                        position: 'absolute',
+                                        right: '-1em',
+                                        top: '-0.5em',
+                                        borderRadius: '$pill',
+                                        backgroundColor: '$accent10',
+                                        color: '$loContrast',
+                                        textTransform: 'uppercase',
+                                        fontWeight: '$bold',
+                                        fontSize: '$2',
+                                        px: '$2',
+                                    }}
+                                >
+                                    new
+                                </Box>
+                                <Heading as="h3" css={{ color: 'inherit' }}>
+                                    Profile comments
+                                </Heading>
+                                <Text css={{ lineHeight: 1.3, color: 'inherit' }}>
+                                    Sign in by leaving a comment on your Scratch profile! This option can be used by New Scratchers as well as Scratchers.
                                 </Text>
                             </OptionCard>
                         </Box>
@@ -558,79 +642,176 @@ export default function Auth() {
                             Change authentication method
                         </Button>
                         <Card css={{ p: '$4', mb: '$2' }}>
-                            <Heading as="h3">Sign in {authenticationMethod === 'cloud' ? 'through cloud data' : 'by commenting'}</Heading>
+                            <Heading as="h3">
+                                Sign in {authenticationMethod === 'cloud' ? 'through cloud data' : authenticationMethod === 'comment' ? 'by commenting' : 'by commenting on your profile'}
+                            </Heading>
                             <Text css={{ lineHeight: 1.3 }}>
                                 {authenticationMethod === 'cloud'
                                     ? 'Copy the code below, open and start the authentication project, and enter the code when prompted. This will sign you in with the Scratch account that you are currently logged into.'
-                                    : 'Copy the code below, open the authentication project, and leave a comment containing only and exactly your code. This will sign you in with the Scratch account that you are currently logged into.'}
+                                    : authenticationMethod === 'comment'
+                                    ? 'Copy the code below, open the authentication project, and leave a comment containing only and exactly your code. This will sign you in with the Scratch account that you are currently logged into.'
+                                    : 'Enter your Scratch username, copy the code below, and leave a comment on your Scratch profile containing only and exactly your code. You may delete your comment once you have authenticated with Scratch Auth. This will sign you in with the Scratch account that you are currently logged into.'}
                             </Text>
-                            <Flex justify="center" css={{ my: '$4' }}>
-                                <CodeCard>
-                                    <Text css={{ fontSize: authenticationMethod === 'cloud' ? '$6' : '$3', '@bp2': { fontSize: '$8' } }}>
-                                        {authenticationTokens[authenticationMethod] === null ? (
-                                            <Skeleton width={authenticationMethod === 'cloud' ? '5em' : '10em'} />
-                                        ) : (
-                                            authenticationTokens[authenticationMethod].publicCode
-                                        )}
-                                    </Text>
-                                </CodeCard>
-                                <CodeButton
-                                    css={{ height: '100%' }}
-                                    disabled={authenticationTokens[authenticationMethod] === null}
-                                    onClick={() => {
-                                        copyTextToClipboard(authenticationTokens[authenticationMethod]?.publicCode);
-                                    }}
-                                >
-                                    Copy
-                                </CodeButton>
+                            <Flex justify="center" direction="column">
+                                {authenticationMethod === 'profile-comment' && (
+                                    <Flex justify="center">
+                                        <Box>
+                                            <Text css={{ mb: '$1', mt: '$2', color: '$neutral11' }}>Username</Text>
+                                            <Flex>
+                                                <UsernameInput
+                                                    css={{ '@bp2': { fontSize: '$8' } }}
+                                                    type="text"
+                                                    value={username || ''}
+                                                    onChange={(event) => setUsername(event.target.value)}
+                                                    disabled={enteredUsername === true}
+                                                />
+                                                <CodeButton
+                                                    css={{ height: '100%' }}
+                                                    disabled={enteredUsername === false}
+                                                    onClick={() => {
+                                                        setUsername(null);
+                                                        setEnteredUsername(false);
+                                                        setOpenedAuthenticationProject(false);
+                                                        setAuthenticationTokens({ cloud: null, comment: null, 'profile-comment': null });
+                                                    }}
+                                                >
+                                                    Change
+                                                </CodeButton>
+                                            </Flex>
+                                        </Box>
+                                    </Flex>
+                                )}
+                                <Flex justify="center" css={{ my: '$4' }}>
+                                    <CodeCard>
+                                        <Text css={{ fontSize: authenticationMethod === 'cloud' ? '$6' : '$3', '@bp2': { fontSize: '$8' } }}>
+                                            {authenticationTokens[authenticationMethod] === null ? (
+                                                <>
+                                                    {authenticationMethod === 'profile-comment' && enteredUsername === false ? (
+                                                        'Waiting for user input...'
+                                                    ) : (
+                                                        <Skeleton width={authenticationMethod === 'cloud' ? '5em' : '10em'} />
+                                                    )}
+                                                </>
+                                            ) : (
+                                                authenticationTokens[authenticationMethod].publicCode
+                                            )}
+                                        </Text>
+                                    </CodeCard>
+                                    <CodeButton
+                                        css={{ height: '100%' }}
+                                        disabled={authenticationTokens[authenticationMethod] === null}
+                                        onClick={() => {
+                                            copyTextToClipboard(authenticationTokens[authenticationMethod]?.publicCode);
+                                        }}
+                                    >
+                                        Copy
+                                    </CodeButton>
+                                </Flex>
                             </Flex>
                             <Flex direction={{ '@initial': 'column', '@bp1': 'row' }} align={{ '@initial': 'center', '@bp1': 'start' }} justify="center">
-                                <Button
-                                    as={openedAuthenticationProject === false ? (isVerifying === false ? 'a' : 'button') : 'button'}
-                                    href={
-                                        openedAuthenticationProject === false
-                                            ? `https://scratch.mit.edu/projects/${authenticationTokens[authenticationMethod]?.authProject}/${authenticationMethod === 'cloud' ? 'fullscreen' : ''}`
-                                            : null
-                                    }
-                                    target={openedAuthenticationProject === false ? '_blank' : null}
-                                    variant="accent"
-                                    css={{ mb: '$2', mr: 0, '@bp1': { mb: 0, mr: '$2' } }}
-                                    disabled={isVerifying}
-                                    onClick={() => {
-                                        if (openedAuthenticationProject === false) {
-                                            setOpenedAuthenticationProject(true);
-                                        } else {
-                                            // Verify identity
-                                            verify();
-                                        }
-                                    }}
-                                >
-                                    {openedAuthenticationProject === false ? 'Open authentication project' : isVerifying === false ? 'Done' : 'Verifying...'}
-                                </Button>
-                                <Button
-                                    as={openedAuthenticationProject === true ? (isVerifying === false ? 'a' : 'button') : 'button'}
-                                    href={
-                                        openedAuthenticationProject === true
-                                            ? `https://scratch.mit.edu/projects/${authenticationTokens[authenticationMethod]?.authProject}/${authenticationMethod === 'cloud' ? 'fullscreen' : ''}`
-                                            : null
-                                    }
-                                    target={openedAuthenticationProject === true ? '_blank' : null}
-                                    variant="neutral"
-                                    onClick={() => {
-                                        if (openedAuthenticationProject === false) {
-                                            // Verify identity
-                                            setOpenedAuthenticationProject(true);
-                                            verify();
-                                        }
-                                    }}
-                                    disabled={isVerifying || authenticationTokens[authenticationMethod] === null}
-                                >
-                                    {openedAuthenticationProject === false
-                                        ? authenticationMethod === 'cloud'
-                                            ? 'I have already entered my code'
-                                            : 'I have already commented'
-                                        : 'Reopen authentication project'}
-                                </Button>
+                                {authenticationMethod === 'profile-comment' ? (
+                                    <>
+                                        <Button
+                                            as={
+                                                openedAuthenticationProject === false && isVerifying === false && enteredUsername === true && authenticationTokens[authenticationMethod] !== null
+                                                    ? 'a'
+                                                    : 'button'
+                                            }
+                                            href={openedAuthenticationProject === false && enteredUsername === true ? `https://scratch.mit.edu/users/${username}#comments` : null}
+                                            target={openedAuthenticationProject === false && enteredUsername === true ? '_blank' : null}
+                                            variant="accent"
+                                            css={{ mb: '$2', mr: 0, '@bp1': { mb: 0, mr: '$2' } }}
+                                            disabled={isVerifying || !username || (enteredUsername === true && authenticationTokens[authenticationMethod] === null)}
+                                            onClick={() => {
+                                                if (enteredUsername === false) {
+                                                    setEnteredUsername(true);
+                                                } else if (openedAuthenticationProject === false) {
+                                                    setOpenedAuthenticationProject(true);
+                                                } else {
+                                                    // Verify identity
+                                                    verify();
+                                                }
+                                            }}
+                                        >
+                                            {enteredUsername === false
+                                                ? 'Generate code'
+                                                : openedAuthenticationProject === false
+                                                ? 'Open your profile'
+                                                : isVerifying === false
+                                                ? 'Done'
+                                                : 'Verifying...'}
+                                        </Button>
+                                        <Button
+                                            as={openedAuthenticationProject === true && isVerifying === false ? 'a' : 'button'}
+                                            href={openedAuthenticationProject === true ? `https://scratch.mit.edu/users/${username}#comments` : null}
+                                            target={openedAuthenticationProject === true ? '_blank' : null}
+                                            variant="neutral"
+                                            onClick={() => {
+                                                if (openedAuthenticationProject === false) {
+                                                    // Verify identity
+                                                    setOpenedAuthenticationProject(true);
+                                                    verify();
+                                                }
+                                            }}
+                                            disabled={isVerifying || authenticationTokens[authenticationMethod] === null}
+                                        >
+                                            {openedAuthenticationProject === false ? 'I have already commented on my profile' : 'Reopen my profile'}
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button
+                                            as={openedAuthenticationProject === false ? (isVerifying === false ? 'a' : 'button') : 'button'}
+                                            href={
+                                                openedAuthenticationProject === false
+                                                    ? `https://scratch.mit.edu/projects/${authenticationTokens[authenticationMethod]?.authProject}/${
+                                                          authenticationMethod === 'cloud' ? 'fullscreen' : ''
+                                                      }`
+                                                    : null
+                                            }
+                                            target={openedAuthenticationProject === false ? '_blank' : null}
+                                            variant="accent"
+                                            css={{ mb: '$2', mr: 0, '@bp1': { mb: 0, mr: '$2' } }}
+                                            disabled={isVerifying}
+                                            onClick={() => {
+                                                if (openedAuthenticationProject === false) {
+                                                    setOpenedAuthenticationProject(true);
+                                                } else {
+                                                    // Verify identity
+                                                    verify();
+                                                }
+                                            }}
+                                        >
+                                            {openedAuthenticationProject === false ? 'Open authentication project' : isVerifying === false ? 'Done' : 'Verifying...'}
+                                        </Button>
+                                        <Button
+                                            as={openedAuthenticationProject === true ? (isVerifying === false ? 'a' : 'button') : 'button'}
+                                            href={
+                                                openedAuthenticationProject === true
+                                                    ? `https://scratch.mit.edu/projects/${authenticationTokens[authenticationMethod]?.authProject}/${
+                                                          authenticationMethod === 'cloud' ? 'fullscreen' : ''
+                                                      }`
+                                                    : null
+                                            }
+                                            target={openedAuthenticationProject === true ? '_blank' : null}
+                                            variant="neutral"
+                                            onClick={() => {
+                                                if (openedAuthenticationProject === false) {
+                                                    // Verify identity
+                                                    setOpenedAuthenticationProject(true);
+                                                    verify();
+                                                }
+                                            }}
+                                            disabled={isVerifying || authenticationTokens[authenticationMethod] === null}
+                                        >
+                                            {openedAuthenticationProject === false
+                                                ? authenticationMethod === 'cloud'
+                                                    ? 'I have already entered my code'
+                                                    : 'I have already commented'
+                                                : 'Reopen authentication project'}
+                                        </Button>
+                                    </>
+                                )}
                             </Flex>
                         </Card>
                         {newOneClickSignInAccount === false && (

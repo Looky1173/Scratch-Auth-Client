@@ -139,7 +139,10 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                             "
                             <br />
                             <br />
-                            <strong>This means that Scratch Auth is currently NOT functional.</strong>
+                            <strong>
+                                Currently, authenticating with cloud data or by commenting on the authentication project is NOT possible. Instead, choose the option to sign in by commenting on your
+                                profile!
+                            </strong>
                         </Text>
                         <Flex css={{ mt: '$4' }}>
                             <Button as="a" href="https://scratch.mit.edu/discuss/topic/609816/" target="_blank" variant="danger">
