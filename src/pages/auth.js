@@ -255,24 +255,9 @@ export default function Auth() {
         if (addUserToOneClickLoginList === true || newOneClickSignInAccount === true) {
             let token;
             try {
-                if (authenticationMethod === 'profile-comment') {
-                    token = await fetch(
-                        `/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${
-                            providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='
-                        }&username=${username}`,
-                        {
-                            method: 'GET',
-                        },
-                    );
-                } else {
-                    token = await fetch(
-                        `/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`,
-                        {
-                            method: 'GET',
-                        },
-                    );
-                }
-
+                token = await fetch(`/api/auth/addAccountToOneClickSignInList?privateCode=${privateCode}&redirect=${providerData?.redirectLocation || 'aHR0cHM6Ly9hdXRoLml0aW5lcmFyeS5ldS5vcmc='}`, {
+                    method: 'GET',
+                });
                 token = await token.json();
             } catch {
                 setHasChosenAuthMethod(false);
