@@ -117,7 +117,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
 
     return (
         <>
-            <STCensorNotice>
+            {/* <STCensorNotice>
                 <Flex>
                     <Box css={{ flex: 'none' }}>
                         <ExclamationTriangleIcon width={64} height={64} />
@@ -154,7 +154,7 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                         </Flex>
                     </Flex>
                 </Flex>
-            </STCensorNotice>
+            </STCensorNotice> */}
             {/*<Banner identifier="scratch-game-jam-questionnaire" CustomContent={QuestionnaireBanner} expiry={14 * 24 * 60 * 60 * 1000} />*/}
             <Flex
                 as="header"
