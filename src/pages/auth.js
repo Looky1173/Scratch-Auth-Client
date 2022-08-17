@@ -542,7 +542,7 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('cloud');
                                 }}
-                                disabled={/* true ||  */ loadingOneClickSignIn}
+                                disabled={/* true || */ loadingOneClickSignIn}
                             >
                                 <Box
                                     css={{
@@ -574,7 +574,7 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('comment');
                                 }}
-                                disabled={/*  true ||   */ loadingOneClickSignIn}
+                                disabled={/* true || */ loadingOneClickSignIn}
                             >
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Comments
