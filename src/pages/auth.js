@@ -18,7 +18,7 @@ import {
     ToastDescription,
 } from '@design-system';
 import { Layout } from '@components';
-import { ArrowLeftIcon, OpenInNewWindowIcon, CheckIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, OpenInNewWindowIcon, CheckIcon, ExclamationTriangleIcon, MagicWandIcon } from '@radix-ui/react-icons';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useToast, useAccounts } from '@hooks';
@@ -114,6 +114,48 @@ const UsernameInput = styled('input', {
     },
 });
 
+function CustomAuthProjectWarning({ providerName, useOfficialAuthProject }) {
+    return (
+        <Flex direction="column" align="center" gap="1" css={{ mt: '$6', mb: -20 }}>
+            <Flex align="center" gap="2" css={{ color: '$accent9' }}>
+                <MagicWandIcon width={24} height={24} />
+                <Text bold css={{ mb: '$1', color: 'inherit' }}>
+                    {providerName} uses a custom authentication project.
+                </Text>
+            </Flex>
+            <Link variant="subtle" onClick={useOfficialAuthProject}>
+                Click here to use the official project instead.
+            </Link>
+        </Flex>
+    );
+}
+
+// https://stackoverflow.com/a/70186040
+/**
+ * If removeList is empty, the function removes all params from url.
+ * @param {*} router
+ * @param {*} removeList
+ */
+const removeQueryParamsFromRouter = (router, removeList = []) => {
+    if (removeList.length > 0) {
+        removeList.forEach((param) => delete router.query[param]);
+    } else {
+        // Remove all
+        Object.keys(router.query).forEach((param) => delete router.query[param]);
+    }
+    router.replace(
+        {
+            pathname: router.pathname,
+            query: router.query,
+        },
+        undefined,
+        /**
+         * Do not refresh the page
+         */
+        { shallow: true },
+    );
+};
+
 export default function Auth() {
     const TOKEN_VALIDITY = 5 * 60 * 1000;
     const [hasChosenAuthMethod, setHasChosenAuthMethod] = useState(false);
@@ -134,9 +176,15 @@ export default function Auth() {
     const { accounts, error: accountError, mutateAccounts } = useAccounts();
     const [toast, deleteToast] = useToast();
 
+    const canUseCustomAuthProject = providerData?.providerName && providerData?.customAuthProject;
+
     useEffect(() => {
         if (router.isReady) {
-            setProviderData({ redirectLocation: router.query?.redirect || undefined, providerName: router.query?.name });
+            setProviderData({
+                redirectLocation: router.query?.redirect || undefined,
+                providerName: router.query?.name,
+                customAuthProject: router.query?.authProject ? Number(router.query.authProject) : undefined,
+            });
             setNewOneClickSignInAccount(Boolean(router.query.newOneClickSignInAccount) === true ? true : false);
         }
     }, [router.isReady, router.query]);
@@ -169,7 +217,9 @@ export default function Auth() {
             if (authenticationMethod === 'profile-comment') {
                 tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}&username=${username}`);
             } else {
-                tokens = await fetch(`/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}`);
+                tokens = await fetch(
+                    `/api/auth/getTokens?method=${authenticationMethod}&redirect=${providerData?.redirectLocation}${canUseCustomAuthProject && `&authProject=${providerData.customAuthProject}`}`,
+                );
             }
 
             tokens = await tokens.json();
@@ -412,6 +462,21 @@ export default function Auth() {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    useEffect(() => {
+        if (providerData?.customAuthProject !== undefined || authenticationTokens.cloud || authenticationTokens.comment || hasChosenAuthMethod === false) return;
+        getTokens();
+    }, [providerData?.customAuthProject]);
+
+    function useOfficialAuthProject() {
+        removeQueryParamsFromRouter(router, ['authProject']);
+
+        setOpenedAuthenticationProject(false);
+        setAuthenticationTokens({ cloud: null, comment: null, 'profile-comment': authenticationTokens['profile-comment'] });
+        setIsVerifying(false);
+        clearTimeout(tokenValidityTimeout.current);
+        setProviderData({ ...providerData, customAuthProject: undefined });
+    }
+
     return (
         <Layout>
             <TitleAndMetaTags title="Sign in with Scratch | Scratch Auth" />
@@ -451,6 +516,7 @@ export default function Auth() {
                         </>
                     )}
                 </Heading>
+                {canUseCustomAuthProject && <CustomAuthProjectWarning providerName={providerData.providerName} useOfficialAuthProject={useOfficialAuthProject} />}
             </Container>
 
             <Container size={hasChosenAuthMethod ? 2 : newOneClickSignInAccount === false ? 3 : 2} css={{ my: '$8' }}>
@@ -476,7 +542,7 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('cloud');
                                 }}
-                                disabled={/* true ||  */loadingOneClickSignIn}
+                                disabled={/* true ||  */ loadingOneClickSignIn}
                             >
                                 <Box
                                     css={{
@@ -508,7 +574,7 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('comment');
                                 }}
-                                disabled={/*  true ||   */loadingOneClickSignIn}
+                                disabled={/*  true ||   */ loadingOneClickSignIn}
                             >
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Comments
