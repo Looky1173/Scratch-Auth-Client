@@ -16,7 +16,7 @@ const ThemeToggle = (props) => {
     const setGlobalTheme = (theme) => {
         const shouldAnimateThemeTransition = router?.pathname?.startsWith('/documentation');
         if (shouldAnimateThemeTransition) {
-            const transitionCSS = '* { transition: 0.2s all linear !important; pointer-events: none !important; }';
+            const transitionCSS = '* { transition: 0.3s all linear !important; pointer-events: none !important; }';
             const head = document.head;
             let style = document.createElement('style');
             head.appendChild(style);
@@ -30,7 +30,7 @@ const ThemeToggle = (props) => {
         if (shouldAnimateThemeTransition) {
             setTimeout(() => {
                 document.getElementById('theme-transition-global-styles').remove();
-            }, 300);
+            }, 400);
         }
     };
 
