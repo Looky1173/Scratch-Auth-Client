@@ -14,7 +14,7 @@ const ThemeToggle = (props) => {
     const router = useRouter();
 
     const setGlobalTheme = (theme) => {
-        const shouldAnimateThemeTransition = router?.pathname?.startsWith('/documentation');
+        const shouldAnimateThemeTransition = true /* router?.pathname?.startsWith('/documentation') */;
         if (shouldAnimateThemeTransition) {
             const transitionCSS = '* { transition: 0.3s all linear !important; pointer-events: none !important; }';
             const head = document.head;
