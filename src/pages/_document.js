@@ -13,10 +13,7 @@ class MyDocument extends Document {
     render() {
         return (
             <Html>
-                <Head>
-                    {CSSBaseline.flush()}
-                    <script async src="https://arc.io/widget.min.js#Nz4SMqdh"></script>
-                </Head>
+                <Head>{CSSBaseline.flush()}</Head>
                 <body>
                     <Main />
                     <NextScript />
