@@ -838,7 +838,7 @@ export default function Auth() {
                                             target={openedAuthenticationProject === false ? '_blank' : null}
                                             variant="accent"
                                             css={{ mb: '$2', mr: 0, '@bp1': { mb: 0, mr: '$2' } }}
-                                            disabled={isVerifying || authenticationTokens[authenticationMethod]?.authProject}
+                                            disabled={isVerifying || !authenticationTokens[authenticationMethod]?.authProject}
                                             onClick={() => {
                                                 if (openedAuthenticationProject === false) {
                                                     setOpenedAuthenticationProject(true);
