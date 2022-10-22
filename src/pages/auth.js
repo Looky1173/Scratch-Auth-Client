@@ -827,7 +827,7 @@ export default function Auth() {
                                 ) : (
                                     <>
                                         <Button
-                                            as={openedAuthenticationProject === false ? (isVerifying === false ? 'a' : 'button') : 'button'}
+                                            as={openedAuthenticationProject === false ? (isVerifying === false && authenticationTokens[authenticationMethod] !== null ? 'a' : 'button') : 'button'}
                                             href={
                                                 openedAuthenticationProject === false
                                                     ? `https://scratch.mit.edu/projects/${authenticationTokens[authenticationMethod]?.authProject}/${
