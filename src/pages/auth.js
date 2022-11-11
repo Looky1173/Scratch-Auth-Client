@@ -577,7 +577,7 @@ export default function Auth() {
                                 disabled={/* true || */ loadingOneClickSignIn}
                             >
                                 <Heading as="h3" css={{ color: 'inherit' }}>
-                                    Comments
+                                    Project comments
                                 </Heading>
                                 <Text css={{ lineHeight: 1.3, color: 'inherit' }}>
                                     Sign in by leaving a comment on a Scratch project! This option can be used by New Scratchers as well as Scratchers.
@@ -592,22 +592,6 @@ export default function Auth() {
                                 }}
                                 disabled={loadingOneClickSignIn}
                             >
-                                <Box
-                                    css={{
-                                        position: 'absolute',
-                                        right: '-1em',
-                                        top: '-0.5em',
-                                        borderRadius: '$pill',
-                                        backgroundColor: '$accent10',
-                                        color: '$loContrast',
-                                        textTransform: 'uppercase',
-                                        fontWeight: '$bold',
-                                        fontSize: '$2',
-                                        px: '$2',
-                                    }}
-                                >
-                                    new
-                                </Box>
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Profile comments
                                 </Heading>
