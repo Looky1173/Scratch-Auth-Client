@@ -879,7 +879,7 @@ export default function Auth() {
                     </Box>
                 )}
                 <Flex css={{ justifyContent: 'center', mt: '$8' }}>
-                    <Button as="a" target="_blank" href="https://scratch.mit.edu/users/Looky1173/#comments">
+                    <Button as="a" target="_blank" href="https://scratch.mit.edu/discuss/topic/705721/?page=1#post-7459826">
                         Report an issue
                         <Box css={{ ml: '$2' }}>
                             <OpenInNewWindowIcon width={20} height={20} />
