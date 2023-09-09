@@ -258,14 +258,14 @@ export default function Auth() {
     }
 
     function verifyTokenValidity() {
-        if (hasChosenAuthMethod === true) {
-            if (!authenticationTokens[authenticationMethod] || authenticationTokens[authenticationMethod].time < new Date(Date.now() - TOKEN_VALIDITY)) {
-                if (authenticationMethod === 'profile-comment' && !username) return;
-                getTokens();
-                tokenValidityTimeout.current = setTimeout(() => {
-                    verifyTokenValidity();
-                }, TOKEN_VALIDITY);
-            }
+        if (hasChosenAuthMethod !== true) return;
+
+        if (!authenticationTokens[authenticationMethod] || authenticationTokens[authenticationMethod].time < new Date(Date.now() - TOKEN_VALIDITY)) {
+            if (authenticationMethod === 'profile-comment' && !username) return;
+            getTokens();
+            tokenValidityTimeout.current = setTimeout(() => {
+                verifyTokenValidity();
+            }, TOKEN_VALIDITY);
         }
     }
 
@@ -290,6 +290,19 @@ export default function Auth() {
             return document.execCommand('copy', true, text);
         }
     }
+
+    const constructRedirectURL = (redirectUrl, params) => {
+        const url = new URL(redirectUrl);
+
+        // Loop through the params object and append query parameters
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                url.searchParams.append(key, params[key]);
+            }
+        }
+
+        return url.toString();
+    };
 
     async function verify() {
         setIsVerifying(true);
@@ -365,7 +378,7 @@ export default function Auth() {
                                             css={{ mr: '$2' }}
                                             onClick={() => {
                                                 deleteToast(errorToast);
-                                                location.href = `${redirect}?privateCode=${privateCode}&publicCode=${publicCode}`;
+                                                location.href = constructRedirectURL(redirect, { privateCode, publicCode });
                                             }}
                                         >
                                             Dismiss and continue
@@ -387,11 +400,11 @@ export default function Auth() {
                     });
                     mutateAccounts();
                 } else {
-                    location.href = `${redirect}?privateCode=${token.instantPrivateCode}`;
+                    location.href = constructRedirectURL(redirect, { privateCode: token.instantPrivateCode });
                 }
             }
         } else {
-            location.href = `${redirect}?privateCode=${privateCode}&publicCode=${publicCode}`;
+            location.href = constructRedirectURL(redirect, { privateCode, publicCode });
         }
     }
 
@@ -443,7 +456,7 @@ export default function Auth() {
         }
 
         if (token.success === true) {
-            location.href = `${redirect}?privateCode=${token.instantPrivateCode}`;
+            location.href = constructRedirectURL(redirect, { privateCode: token.instantPrivateCode });
         } else {
             deleteToast(signingInToast);
             toast({
