@@ -555,7 +555,7 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('cloud');
                                 }}
-                                disabled={/* true || */ loadingOneClickSignIn}
+                                disabled={true || loadingOneClickSignIn}
                             >
                                 <Box
                                     css={{
@@ -571,7 +571,7 @@ export default function Auth() {
                                         px: '$2',
                                     }}
                                 >
-                                    recommended
+                                    scratch cloud server outage
                                 </Box>
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Cloud data
