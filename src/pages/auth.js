@@ -563,7 +563,7 @@ export default function Auth() {
                                         right: '-1em',
                                         top: '-0.5em',
                                         borderRadius: '$pill',
-                                        backgroundColor: '$accent10',
+                                        backgroundColor: '$danger10',
                                         color: '$loContrast',
                                         textTransform: 'uppercase',
                                         fontWeight: '$bold',
