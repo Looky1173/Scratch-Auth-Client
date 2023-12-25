@@ -165,7 +165,7 @@ export async function getStaticProps({ params: { slug } }) {
     );
 
     // Defines the order in which articles will appear on the docs sidebar
-    const docsOrder = ['introduction', 'about', 'using-scratch-auth', 'migrating-from-fluffyscratch'];
+    const docsOrder = ['introduction', 'about', 'using-scratch-auth', 'custom-frontend', 'migrating-from-fluffyscratch'];
 
     return {
         props: {

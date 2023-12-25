@@ -1,0 +1,62 @@
+---
+title: Using a custom frontend on top of Scratch Auth
+slug: custom-frontend
+---
+
+If you need an entirely custom authentication page, you will need to build it yourself using Scratch Auth's backend API.
+
+**The backend server is available at `https://auth-api.itinerary.eu.org`.**
+
+---
+
+<Badge variant="accent">**GET**</Badge> `/auth/getTokens`
+\
+Query options:
+- **redirect** [required] - String (Base64 encoded URL with or without "https://" prefix)
+- method - Enum ("cloud", "comment", "profile-comment")
+
+<br />
+
+<Badge variant="accent">**GET**</Badge> `/auth/verifyToken/:privateCode`
+\
+Query parameters:
+- **privateCode** [required] - String
+- method - Enum ("cloud", "comment", "profile-comment")
+
+Query options:
+- **redirect** [required] - String (Base64 encoded URL with or without "https://" prefix; only required when the _oneClickSignIn_ query option is _true_)
+- oneClickSignIn - Boolean
+
+<br />
+
+<Badge variant="accent">**GET**</Badge> `/auth/oneClickSignIn`
+\
+Headers:
+- **Authorization** [required] - String
+
+<br />
+
+<Badge variant="accent">**POST**</Badge> `/auth/oneClickSignIn/:username`
+\
+Headers:
+- **Authorization** [required] - String
+
+Query parameters:
+- **username** [required] - String
+
+Query options:
+- **redirect** [required] - String (Base64 encoded URL with or without "https://" prefix)
+
+<br />
+
+<Badge variant="accent">**DELETE**</Badge> `/auth/oneClickSignIn/:username`
+\
+Headers:
+- **Authorization** [required] - String
+
+Query parameters:
+- username - String
+
+---
+
+For an example implementation, see the Scratch Auth client itself.
