@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
 import { Layout, DocumentationSidebar } from '@components';
-import { Box, Badge, Button, Flex, Heading, Link, Container, Paragraph, Separator, styled } from '@design-system';
+import { Box, Badge, Button, Flex, Heading, Link, Container, Paragraph, Separator, TitleAndMetaTags, styled } from '@design-system';
 import NextLink from 'next/link';
 
 import Highlight, { defaultProps } from 'prism-react-renderer';
@@ -100,6 +100,7 @@ const Post = ({ frontMatter, slug, mdxSource, docs, docsOrder }) => {
 
     return (
         <Layout>
+            <TitleAndMetaTags title={frontMatter.title + " - Documentation | Scratch Auth"} />
             <Flex direction={{ '@initial': 'column', '@bp2': 'row' }}>
                 <DocumentationSidebar docs={docs} order={docsOrder} currentSlug={slug} />
                 <Box css={{ p: '$4', maxWidth: '1000px' }}>
