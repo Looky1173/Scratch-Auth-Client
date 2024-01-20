@@ -571,7 +571,7 @@ export default function Auth() {
                                         px: '$2',
                                     }}
                                 >
-                                    scratch cloud server outage
+                                    temporarily disabled
                                 </Box>
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Cloud data
@@ -587,8 +587,24 @@ export default function Auth() {
                                     setHasChosenAuthMethod(true);
                                     setAuthenticationMethod('comment');
                                 }}
-                                disabled={/* true || */ loadingOneClickSignIn}
+                                disabled={true || loadingOneClickSignIn}
                             >
+                                <Box
+                                    css={{
+                                        position: 'absolute',
+                                        right: '-1em',
+                                        top: '-0.5em',
+                                        borderRadius: '$pill',
+                                        backgroundColor: '$danger10',
+                                        color: '$loContrast',
+                                        textTransform: 'uppercase',
+                                        fontWeight: '$bold',
+                                        fontSize: '$2',
+                                        px: '$2',
+                                    }}
+                                >
+                                    temporarily disabled
+                                </Box>
                                 <Heading as="h3" css={{ color: 'inherit' }}>
                                     Project comments
                                 </Heading>
